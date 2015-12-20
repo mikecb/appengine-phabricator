@@ -15,7 +15,7 @@
 mkdir -p /var/log/app_engine/custom_logs
 
 cd /opt/phabricator
-export SQL_DETAILS="$(/google/google-cloud-sdk/bin/gcloud sql instances describe ${SQL_INSTANCE} --format=json)"
+export SQL_DETAILS="$(/google/google-cloud-sdk/bin/gcloud --project=${PROJECT} sql instances describe ${SQL_INSTANCE} --format=json)"
 if [ -z "${SQL_DETAILS}" ]; then
   echo "Failed to lookup details for the '${SQL_INSTANCE}' Cloud SQL instance" >> /var/log/app_engine/custom_logs/setup.log
   exit 1
@@ -32,7 +32,7 @@ export SQL_USER=root
 echo "Setting up a connection to ${SQL_INSTANCE} at ${SQL_HOST} as ${SQL_USER}" >> /var/log/app_engine/custom_logs/setup.log
 
 export SQL_PASS="$(uuidgen)"
-/google/google-cloud-sdk/bin/gcloud sql instances set-root-password \
+/google/google-cloud-sdk/bin/gcloud --project="$PROJECT" sql instances set-root-password \
   --password "${SQL_PASS}" "${SQL_INSTANCE}"
 
 # Configure Phabricator's connection to the SQL server.
